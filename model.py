@@ -814,6 +814,9 @@ class TableGan(object):
         X = data[:,:-1]
         y = data[:,-1]
         
+        self.attrib_num = X.shape[1]
+        self.zero_one_ratio = 1.0 - (np.sum(y) / len(y))
+
         min_max_scaler = preprocessing.MinMaxScaler(feature_range=(-1, 1))
 
         # Normalizing Initial Data
