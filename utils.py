@@ -401,12 +401,15 @@ def generate_data(sess, model, config, option):
 
         origin_data_path = model.train_data_path  # './data/'+ config.dataset+ '/train_'+ config.dataset + '_cleaned'
 
-        if os.path.exists(origin_data_path + ".csv"):
-            origin_data = pd.read_csv(origin_data_path + ".csv", sep=';')
+        #if os.path.exists(origin_data_path + ".csv"):
+        #    origin_data = pd.read_csv(origin_data_path + ".csv", sep=';')
 
-        elif os.path.exists(origin_data_path + ".pickle"):
-            with open(origin_data_path + '.pickle', 'rb') as handle:
-                origin_data = pickle.load(handle)
+        #elif os.path.exists(origin_data_path + ".pickle"):
+        #    with open(origin_data_path + '.pickle', 'rb') as handle:
+        #        origin_data = pickle.load(handle)
+
+        if os.path.exists(origin_data_path + ".npy"):
+                origin_data = np.load(origin_data_path + '.npy')[:,:-1]
         else:
             print("Error Loading Dataset !!")
             exit(1)
@@ -422,7 +425,7 @@ def generate_data(sess, model, config, option):
         # Rounding Data
         round_columns = range(scaled_fake.shape[1])
 
-        round_scaled_fake = rounding(scaled_fake, origin_data.as_matrix(), round_columns)
+        round_scaled_fake = rounding(scaled_fake, origin_data.values, round_columns)
 
         # Required for Classification NN evaluation only
         # save_data(round_scaled_fake , save_dir +'/' + config.test_id + "_scaled_fake_tabular.pickle" )
