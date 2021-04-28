@@ -274,7 +274,7 @@ class TableGan(object):
 
         self.saver = tf.train.Saver()
 
-    def train(self, config, experiment):
+    def train(self, config):#, experiment): #parameter 'experiment' has not appeared in any references
         print("Start Training...\n")
 
         d_optim = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
@@ -514,10 +514,10 @@ class TableGan(object):
                     })
 
                 counter += 1
-                experiment.log_metric("d_loss", errD_fake + errD_real, step=idx)
-                experiment.log_metric("g_loss", errG, step=idx)
+                #experiment.log_metric("d_loss", errD_fake + errD_real, step=idx)
+                #experiment.log_metric("g_loss", errG, step=idx)
                 if self.y_dim:
-                    experiment.log_metric("c_loss", errC, step=idx)
+                    #experiment.log_metric("c_loss", errC, step=idx)
                     print("Dataset: [%s] -> [%s] -> Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f, "
                           "c_loss: %.8f" % (config.dataset, config.test_id, epoch, idx, batch_idxs,
                                             time.time() - start_time, errD_fake + errD_real, errG, errC))
@@ -805,8 +805,34 @@ class TableGan(object):
             return tf.nn.tanh(h4)
 
     def load_dataset(self, load_fake_data=False):
+        #return self.load_tabular_data(self.dataset_name, self.input_height, self.y_dim, self.test_id, load_fake_data)
+        return self.load_npy_tabular_data(self.dataset_name, self.input_height, self.y_dim)
 
-        return self.load_tabular_data(self.dataset_name, self.input_height, self.y_dim, self.test_id, load_fake_data)
+    def load_npy_tabular_data(self, dataset_name, dim, classes=2):
+        self.train_data_path = f'data/{dataset_name}.npy'
+        data = np.load(self.train_data_path)
+        X = data[:,:-1]
+        y = data[:,-1]
+        
+        min_max_scaler = preprocessing.MinMaxScaler(feature_range=(-1, 1))
+
+        # Normalizing Initial Data
+        X = pd.DataFrame(min_max_scaler.fit_transform(X))
+        # X is [rows * config.attrib_num] 15000 * 23
+
+        padded_ar = padding_duplicating(X, dim * dim)
+
+        X = reshape(padded_ar, dim)
+
+        print("Final Real Data shape = " + str(X.shape))  # 15000 * 8 * 8
+
+        if self.y_dim:
+            y = y.reshape(y.shape[0], -1).astype(np.int16)
+            y_onehot = np.zeros((len(y), classes), dtype=np.float)
+            for i, lbl in enumerate(y):
+                y_onehot[i, y[i]] = 1.0
+            return X, y_onehot, y
+        return X, None, None
 
     def load_tabular_data(self, dataset_name, dim, classes=2, test_id='', load_fake_data=False):
 
