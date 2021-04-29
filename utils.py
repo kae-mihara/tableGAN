@@ -409,7 +409,7 @@ def generate_data(sess, model, config, option):
         #        origin_data = pickle.load(handle)
 
         if os.path.exists(origin_data_path):
-                data = np.load(origin_data_path)[:,:-1]
+                data = np.load(origin_data_path)
                 from sklearn.model_selection import train_test_split
                 train, test = train_test_split(data, test_size=0.7,random_state=42)
                 origin_data = train[:,:-1]
