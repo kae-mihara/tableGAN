@@ -10,3 +10,7 @@ checkpoint/
 samples/
 
 logs/
+
+data/
+
+test.py

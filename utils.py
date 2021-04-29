@@ -421,6 +421,7 @@ def generate_data(sess, model, config, option):
 
         min_max_scaler = preprocessing.MinMaxScaler(feature_range=(-1, 1))
 
+        print('origin_data.shape:',origin_data.shape)
         min_max_scaler.fit(origin_data)
 
         # Fake Gen --> Scaling --> Rounding --> 1) Classification , 2)-->Normalizaing --> ( Euclidian Distance, CDF)
@@ -430,7 +431,7 @@ def generate_data(sess, model, config, option):
         # Rounding Data
         round_columns = range(scaled_fake.shape[1])
 
-        round_scaled_fake = rounding(scaled_fake, origin_data.values, round_columns)
+        round_scaled_fake = rounding(scaled_fake, origin_data, round_columns)
 
         # Required for Classification NN evaluation only
         # save_data(round_scaled_fake , save_dir +'/' + config.test_id + "_scaled_fake_tabular.pickle" )
