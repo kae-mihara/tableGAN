@@ -811,9 +811,12 @@ class TableGan(object):
     def load_npy_tabular_data(self, dataset_name, dim, classes=2):
         self.train_data_path = f'data/{dataset_name}.npy'
         data = np.load(self.train_data_path)
-        X = data[:,:-1]
-        y = data[:,-1]
         
+        from sklearn.model_selection import train_test_split
+        train, test = train_test_split(data, test_size=0.7,random_state=42)
+        X = train[:,:-1]
+        y = train[:,-1]
+
         self.attrib_num = X.shape[1]
         self.zero_one_ratio = 1.0 - (np.sum(y) / len(y))
 

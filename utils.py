@@ -408,8 +408,13 @@ def generate_data(sess, model, config, option):
         #    with open(origin_data_path + '.pickle', 'rb') as handle:
         #        origin_data = pickle.load(handle)
 
-        if os.path.exists(origin_data_path + ".npy"):
-                origin_data = np.load(origin_data_path + '.npy')[:,:-1]
+        if os.path.exists(origin_data_path):
+                data = np.load(origin_data_path)[:,:-1]
+                from sklearn.model_selection import train_test_split
+                train, test = train_test_split(data, test_size=0.7,random_state=42)
+                origin_data = train[:,:-1]
+                #y = train[:,-1]
+
         else:
             print("Error Loading Dataset !!")
             exit(1)
